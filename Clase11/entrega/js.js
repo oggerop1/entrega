@@ -35,15 +35,12 @@ class Producto{
     }
 };
 
-
-
 document.getElementById("form-productos").addEventListener("submit", function(e){
     // obtengo los valores del formulario ingresados por el usuario
     let obtenerNombreProducto   = document.getElementById("nombre").value;
     let obtenerPrecio           = document.getElementById("precio").value;
     let obtenerStock            = document.getElementById("stock").value;
-   
-  
+
     // 
     if(obtenerNombreProducto==='' || obtenerPrecio==='' || obtenerStock ==='' ){
         mostrarMensaje("ingrese los datos solicitados", "danger")
@@ -53,7 +50,7 @@ document.getElementById("form-productos").addEventListener("submit", function(e)
         producto.set_nombre(obtenerNombreProducto);
         producto.set_precio(obtenerPrecio);
         producto.set_stock (obtenerStock);
-    
+        
         // llamo funcion para agregar en un array el producto
         agregarProductosBase(producto);
         // con e cancelo el evento que refresca la pagina automaticamente.
@@ -81,16 +78,23 @@ function agregarProductosBase(producto){
     }
 }
 
-
 function agregarProductosTabla(producto){      
-    document.getElementById("tablaProductos").innerHTML += ''
+    let fila = document.createElement("tr");
+    fila.innerHTML = `<td>${producto.get_nombre()}</td>
+                      <td>${producto.get_stock()}</td>
+                      <td>${producto.get_precio()}</td>
+                      <td><button class="btn-danger borrar_elemento">Borrar</button></td>
+                      <td><button class="btn btn-success">comprar</button></td>`;
+
+    let tabla = document.getElementById("tbody");
+
+    tabla.append(fila);
+    let botones_borrar = document.querySelectorAll(".borrar_elemento");
     
-    '<tbody><tr></tr><td class="nombreProd">'+producto.get_nombre()+'</td><td>'+producto.get_precio()+'</td><td>'+producto.get_stock()+'</td><td><button class="btn btn-danger eliminar" id="btnEliminar"><spam class="glyphicon glyphicon-remove-circle"></spam></button></td><td><button class="btn btn-success" id="btnComprar"><span class="glyphicon glyphicon-shopping-cart"></span></button></td></tr></tr></tbody>'; 
-    let botones_borrar = document.querySelectorAll(".eliminar");
-    console.log(botones_borrar);
     for( let boton of botones_borrar){
         boton.addEventListener("click" , borrar_producto);
     }
+
 }
 
 function mostrarMensaje(mensaje, claseBT){
@@ -109,27 +113,39 @@ function mostrarMensaje(mensaje, claseBT){
 
 
 function borrar_producto(e){
-     let elementoEliminar = e.target;
-    //if(elementoEliminar.id ==="btnEliminar"){
+    let filaDelete = e.target.parentNode.parentNode;
+    let tdValorNombre = filaDelete.firstElementChild.innerHTML;
+    let duplicado = baseProductos.filter(prod =>prod.get_nombre() === tdValorNombre)
+
+    //con el if controlo que no se agregue el mismo nombre del producto. 1= true
+    if (duplicado.length ===1){
+        // con el for busco la coincidencia para borrar con el metodo splice
+        for(var i = baseProductos.length - 1; i >= 0; i--) { 
+            if(baseProductos[i].get_nombre() === tdValorNombre) 
+            { baseProductos.splice(i, 1); } }
+
+        mostrarMensaje("eliminado de la base,","danger");
+        //document.getElementById("form-productos").reset();
+        
+    }
+    console.log(filaDelete);
+    console.log(tdValorNombre);   
+    filaDelete.remove();
+    
+}
+/*
+// campturo el elemento para los diferentes iconos de la culumna Acciones dentro del contenedor de la tabla id=tablaProductos
+document.getElementById("tablaProductos").addEventListener("click",function(e){
+    let elementoEliminar = e.target;
+    if(elementoEliminar.id ==="btnEliminar"){
         // tengo que eliminar del array
-        var elementosTD=e.srcElement.parentElement.parentElement.getElementsByTagName("td");
-        var valores="";
-        for(let i=0;i<elementosTD.length;i++){
- 
-			// obtenemos cada uno de los valores y los ponemos en la variable "valores"
-			valores+=elementosTD[i].innerHTML+"\n";
-            console.log(valores);
-		}
- 
-		
 
         elementoEliminar.parentElement.parentElement.remove();
         mostrarMensaje("Producto eliminado correctamente!!,","danger");
-    //}
+   }
 
-   /* let elementoCompar = e.target
+    let elementoCompar = e.target
     if (elementoCompar.id==="btnComprar"){
         alert("estamos trabajando en esta nueva funcionalidad")
-    }*/
-
-}
+    }
+})*/
