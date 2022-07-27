@@ -80,10 +80,11 @@ function agregarProductosBase(producto){
 
 function agregarProductosTabla(producto){      
     let fila = document.createElement("tr");
-    fila.innerHTML = `<td>${producto.get_nombre()}</td>
-                      <td>${producto.get_stock()}</td>
-                      <td>${producto.get_precio()}</td>
+    fila.innerHTML = `<td class="nomProd">${producto.get_nombre()}</td>
+                      <td class="stockProd">${producto.get_stock()}</td>
+                      <td class ="precioProd">${producto.get_precio()}</td>
                       <td><button class="btn-danger borrar_elemento">Borrar</button></td>
+                      <td><button class="btn btn-success Editar_elemento">Editar</button></td>
                       <td><button class="btn btn-success">comprar</button></td>`;
 
     let tabla = document.getElementById("tbody");
@@ -95,6 +96,10 @@ function agregarProductosTabla(producto){
         boton.addEventListener("click" , borrar_producto);
     }
 
+    let botones_editar = document.querySelectorAll(".Editar_elemento");
+    for (let btn_edit of botones_editar ){
+        btn_edit.addEventListener("click",editar_producto);
+    }
 }
 
 function mostrarMensaje(mensaje, claseBT){
@@ -115,7 +120,7 @@ function mostrarMensaje(mensaje, claseBT){
 function borrar_producto(e){
     let filaDelete = e.target.parentNode.parentNode;
     let tdValorNombre = filaDelete.firstElementChild.innerHTML;
-    let duplicado = baseProductos.filter(prod =>prod.get_nombre() === tdValorNombre)
+    let duplicado = baseProductos.filter(prod =>prod.get_nombre() === tdValorNombre);
 
     //con el if controlo que no se agregue el mismo nombre del producto. 1= true
     if (duplicado.length ===1){
@@ -128,24 +133,23 @@ function borrar_producto(e){
         //document.getElementById("form-productos").reset();
         
     }
-    console.log(filaDelete);
-    console.log(tdValorNombre);   
     filaDelete.remove();
-    
 }
-/*
-// campturo el elemento para los diferentes iconos de la culumna Acciones dentro del contenedor de la tabla id=tablaProductos
-document.getElementById("tablaProductos").addEventListener("click",function(e){
-    let elementoEliminar = e.target;
-    if(elementoEliminar.id ==="btnEliminar"){
-        // tengo que eliminar del array
 
-        elementoEliminar.parentElement.parentElement.remove();
-        mostrarMensaje("Producto eliminado correctamente!!,","danger");
-   }
+function editar_producto(e){
+    let filaEditar = e.target.parentNode.parentNode;
+    let tdValorNombre = filaEditar.firstElementChild.innerHTML;
 
-    let elementoCompar = e.target
-    if (elementoCompar.id==="btnComprar"){
-        alert("estamos trabajando en esta nueva funcionalidad")
+    let duplicado = baseProductos.filter(prod =>prod.get_nombre() === tdValorNombre);
+
+    //obtengo los valores a traves de la clase de cada uno de los td.
+    let nombre_producto = filaEditar.querySelector(".nomProd").textContent;
+    let precio_producto = filaEditar.querySelector(".precioProd").textContent;
+    let stock_producto = filaEditar.querySelector(".stockProd").textContent;
+  
+    if (duplicado.length ===1){
+        document.getElementById("nombre").value = nombre_producto;
+        document.getElementById("precio").value = precio_producto;
+        document.getElementById("stock").value = stock_producto;
     }
-})*/
+}
